@@ -33,9 +33,9 @@ const handleLogout = async (req, res) => {
     {
       httpOnly: true, 
       sameSite: 'None',
-      secure: true,
+      // secure: true, // only serve on https
     }
-  ); // secure: true - only serve on https
+  );
   res.sendStatus(204);
 }
 
