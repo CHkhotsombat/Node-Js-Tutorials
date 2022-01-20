@@ -1,12 +1,6 @@
-const usersDB = {
-  users: require('../model/users.json'),
-  setUsers: function (data) { this.users = data }
-}
-
+const User = require('../model/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const fsPromises = require('fs').promises;
-const path = require('path');
 
 const handleLogin = async (req, res) => {
   const { username, password } = req.body;
@@ -18,7 +12,7 @@ const handleLogin = async (req, res) => {
   }
 
   // find user
-  const foundUser = usersDB.users.find(user => user.username === username);
+  const foundUser = await User.findOne({ username: username }).exec();
   if (!foundUser) return res.sendStatus(401); // Unauthorized
 
   // evaluate password
@@ -44,14 +38,13 @@ const handleLogin = async (req, res) => {
     );
     
     // Saving refresh token
-    const otherUsers = usersDB.users.filter(person => person.username !== foundUser.username);
-    const currentUser = { ...foundUser, refreshToken };
-    usersDB.setUsers([...otherUsers, currentUser]);
+    try {
+      foundUser.refreshToken = refreshToken
+      result = await foundUser.save();
+    } catch (error) {
+      return res.status(500).send(error);
+    }
     
-    await fsPromises.writeFile(
-      path.join(__dirname, '..', 'model', 'users.json'),
-      JSON.stringify(usersDB.users)
-    )
     res.cookie(
       'jwt', 
       refreshToken, 
