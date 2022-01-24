@@ -7,14 +7,14 @@ const handleLogout = async (req, res) => {
   const refreshToken = cookies.jwt; 
 
   // Is refresh token in DB?
-  const foundUser = await User.findOne({ refreshToken: refreshToken }).exec();
+  const foundUser = await User.findOne({ refreshToken }).exec();
   if (!foundUser) {
     res.clearCookie('jwt', { httpOnly: true });
     return res.sendStatus(204);
   }
   
   // Delete refresh token in DB
-  foundUser.refreshToken = null;
+  foundUser.refreshToken = '';
   result = await foundUser.save();
 
   res.clearCookie(
