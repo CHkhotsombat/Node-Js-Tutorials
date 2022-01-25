@@ -40,7 +40,7 @@ const handleLogin = async (req, res) => {
     // Saving refresh token
     try {
       foundUser.refreshToken = refreshToken
-      result = await foundUser.save();
+      const result = await foundUser.save();
     } catch (error) {
       return res.status(500).send(error);
     }
