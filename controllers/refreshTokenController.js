@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 
@@ -17,7 +18,7 @@ const handleRefreshToken = async (req, res) => {
     refreshToken,
     process.env.REFRESH_TOKEN_SECRET,
     (error, decode) => {
-      if (error || decode.username !== foundUser.username) return res.sendStatus(403);
+      if (error || !_.isEqual(decode.username, foundUser.username)) return res.sendStatus(403);
 
       const roles = Object.values(foundUser.roles);
       const accessToken = jwt.sign(
