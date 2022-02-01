@@ -1,7 +1,11 @@
 # Node-Js-Tutorials
 Learning about Node.js
 
-# Before 1st start this project
+## Setup ENV file
 
 * Create .env file
 * Copy .env.example to .env
+* You can using this command
+```
+cp .env.example .env
+```
