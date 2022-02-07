@@ -34,9 +34,6 @@ app.use(express.json());
 // serve static files
 app.use('/', express.static(path.join(__dirname, '/public')));
 
-// Error handler
-app.use(errorHandler);
-
 // middleware for cookie
 app.use(cookieParser());
 
@@ -55,9 +52,12 @@ app.all('*', (req, res) => {
   } else {
     res.type('text').send('404 Not found');
   }
-}) 
+}); 
+
+// Error handler
+app.use(errorHandler);
 
 mongoose.connection.once('open', () => {
   console.log('Connected to MongoDB.');
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-})
+});

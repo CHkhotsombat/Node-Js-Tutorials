@@ -3,6 +3,7 @@ const fs = require('fs');
 const fsPromises = require('fs').promises;
 const path = require('path');
 const { format } = require('date-fns');
+const logByWinston = require('./logWinston');
 
 const logEvents = async (message, logFileName) => {
   const dateTime = format(new Date(), 'yyyy-MM-dd\tHH:mm:ss');
@@ -20,12 +21,30 @@ const logEvents = async (message, logFileName) => {
   }
 }
 
-const logger = (req, res, next) => {
-  logEvents(
-    `${req.method}\t${req.headers.origin}\t${req.url}`, 
-    `log-${format(new Date(), 'yyyy-MM-dd')}.txt`
-  );
-  console.log(`${req.method} ${req.path}`);
+const logger = async (req, res, next) => {
+  // logEvents(
+  //   `${req.method}\t${req.headers.origin}\t${req.url}`, 
+  //   `log-${format(new Date(), 'yyyy-MM-dd')}.txt`
+  // );
+  // console.log(`${req.method} ${req.path}`);
+  
+  // logByWinston(`${req.method}\t${req.headers.origin}\t${req.url}`)
+
+  const env = process.env.NODE_ENV || 'development';
+
+  const logDir = path.join(__dirname, '..', 'logs');
+
+  // Create the log directory if it does not exist
+  if (!fs.existsSync(logDir)) await fsPromises.mkdir(logDir);
+
+  const filename = path.join(logDir, `${env}.log`);
+  const params = {
+    url: req.url,
+    method: req.method,
+    path: req.path,
+  }
+  logByWinston(filename, { message: 'info', info: params })
+
   next();
 }
 
